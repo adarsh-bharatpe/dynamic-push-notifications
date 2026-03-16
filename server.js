@@ -52,7 +52,8 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (req.method === 'GET' && req.url === '/banner') {
+  const pathname = req.url?.split('?')[0] || '/';
+  if (req.method === 'GET' && (pathname === '/banner' || pathname === '/banner/')) {
     const priceData = getGoldPrice();
     lastBannerPriceData = priceData;
     lastBannerPriceTime = Date.now();
@@ -66,7 +67,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (req.method === 'GET' && (req.url === '/banner/image' || req.url === '/banner.png' || req.url === '/gold-banner')) {
+  if (req.method === 'GET' && (pathname === '/banner/image' || pathname === '/banner.png' || pathname === '/gold-banner')) {
     try {
       const useCached = lastBannerPriceData && (Date.now() - lastBannerPriceTime < BANNER_PRICE_TTL_MS);
       const priceData = useCached ? lastBannerPriceData : getGoldPrice();

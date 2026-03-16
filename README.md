@@ -43,26 +43,26 @@ Send PN via Firebase with image URL
 
 Two templates are used depending on whether gold price went **down** or **up** (today vs yesterday).
 
-**When price is down (today &lt; yesterday):**
+**1️⃣ When gold price decreases (buy the dip):**
 
 | Field | Content |
 |--------|--------|
-| **Title** | Gold Price Drop |
-| **Subtitle** | Gold prices are down. Invest now. |
+| **Title** | 📉 Gold prices just dipped! |
+| **Subtitle** | Perfect time to buy the dip, start investing in gold today. |
 | **PN image** | Dynamic banner with **downward** curve; yesterday (left), today (right). |
 
-**When price is up (today &gt; yesterday):**
+**2️⃣ When gold price increases (bullish signal):**
 
 | Field | Content |
 |--------|--------|
-| **Title** | Gold Price Rise |
-| **Subtitle** | Gold prices are increasing. Invest now to earn return. |
+| **Title** | 📈 Gold is on the rise! |
+| **Subtitle** | Prices are climbing today, start your gold investment now. |
 | **PN image** | Dynamic banner with **upward** curve; yesterday (left), today (right). |
 
 **Body copy (price down)**
 
-- **Static:**  
-  `Gold Discount day, invest in gold today before this is gone.`
+- Subtitle line as main message:  
+  `Perfect time to buy the dip, start investing in gold today.`
 - **Dynamic (fill from API / date):**
   - Today’s date (e.g. *16 Mar 2026*).
   - Yesterday’s date (e.g. *15 Mar 2026*).
@@ -70,11 +70,11 @@ Two templates are used depending on whether gold price went **down** or **up** (
 
 **Example final body (price down):**
 
-> Gold prices are down. Invest now. **16 Mar 2026** vs **15 Mar 2026** — **₹410/gram** down.
+> Perfect time to buy the dip, start investing in gold today. **16 Mar 2026** vs **15 Mar 2026** — **₹410/gram** down.
 
 **Example final body (price up):**
 
-> Gold prices are increasing. Invest now to earn return. **16 Mar 2026** vs **15 Mar 2026** — **₹200/gram** up.
+> Prices are climbing today, start your gold investment now. **16 Mar 2026** vs **15 Mar 2026** — **₹200/gram** up.
 
 **Placeholders for implementation**
 
@@ -145,8 +145,8 @@ Using **Firebase Cloud Messaging (FCM)**. Example payload:
   "message": {
     "token": "USER_DEVICE_TOKEN",
     "notification": {
-      "title": "Gold Price Drop",
-      "body": "Gold Discount day, invest in gold today before this is gone. 16 Mar 2026 vs 15 Mar 2026 — ₹410/gram down."
+      "title": "📉 Gold prices just dipped!",
+      "body": "Perfect time to buy the dip, start investing in gold today. 16 Mar 2026 vs 15 Mar 2026 — ₹410/gram down."
     },
     "android": {
       "notification": {
@@ -157,9 +157,9 @@ Using **Firebase Cloud Messaging (FCM)**. Example payload:
 }
 ```
 
-- **Title:** Gold Price Drop  
-- **Subtitle:** Time to maximise your saving today (use `android.notification.channelId` or data payload if your app reads subtitle from data).  
-- **Body:** Static + dynamic (today’s date, yesterday’s date, **₹410/gram**).  
+- **Title:** Use template by direction (e.g. “📉 Gold prices just dipped!” or “📈 Gold is on the rise!”).  
+- **Subtitle:** Matching subtitle (use `android.notification.channelId` or data payload if your app reads subtitle from data).  
+- **Body:** Use `getBannerData(goldData).pnBody` for full dynamic body.  
 - **Image:** Dynamic banner URL.
 
 Android automatically shows the image banner in the PN when **BigPictureStyle** is supported (Firebase handles this when configured).
@@ -182,7 +182,7 @@ Create a **cron job** (e.g. every day at 6 PM).
 
 **Flow:** Fetch gold price → calculate drop → generate banner → upload → send push.
 
-**Result:** User receives PN with title, body, and dynamic banner (e.g. “Gold Price Drop”, “Price down by ₹410/g”).
+**Result:** User receives PN with title, body, and dynamic banner (e.g. “📉 Gold prices just dipped!”, “Price down by ₹410/g”).
 
 ---
 
@@ -264,12 +264,11 @@ To send real push notifications with the dynamic banner image:
    async function sendGoldPriceDropPush(fcmTokens, bannerImageUrl, goldData) {
      const { getBannerData } = require('./banner.js');
      const data = getBannerData(goldData);
-     const body = `Gold Discount day, invest in gold today before this is gone. ${data.todayDate} vs ${data.yesterdayDate} — ${data.priceDropText} down.`;
 
      const message = {
        notification: {
-         title: 'Gold Price Drop',
-         body,
+         title: data.title,
+         body: data.pnBody,
        },
        android: {
          notification: {
@@ -305,6 +304,7 @@ To send real push notifications with the dynamic banner image:
 | **Banner endpoint** | `/banner/image` generates on every request | For cron: call `generateBanner(goldData)` once, upload buffer to S3/R2, then send FCM with the returned URL. You can still keep `/banner/image` for preview or use a “dynamic image API” (see Pro tip). |
 | **Error handling** | Basic try/catch for banner | Add retries for gold API and FCM; log failures; consider dead-letter or alerts if the daily run fails. |
 | **Health** | None | Optional: add `GET /health` that checks gold API (and optionally Firebase) so your orchestrator can monitor. |
+| **Notification icon** | Preview uses a placeholder/Play icon URL in `preview.html` | **In production**, replace the notification icon URL with your **actual app icon** (e.g. from your CDN or app assets). The banner image itself has no logo; only the small header icon in the PN should use the real app icon. |
 
 **Minimal production flow (pseudo-code):**
 
@@ -348,9 +348,8 @@ Open **http://localhost:3000/banner** to see the push notification inside a mock
 
 ### Dynamic banner (this repo)
 
-- **Title:** Gold Price Drop  
-- **Subtitle:** Time to maximise your saving today  
-- **Static line:** Gold Discount day, invest in gold today before this is gone.  
+- **Title:** By direction — “📉 Gold prices just dipped!” (price down) or “📈 Gold is on the rise!” (price up).  
+- **Subtitle / header line:** “Perfect time to buy the dip…” (down) or “Prices are climbing today…” (up).  
 - **Dynamic:** Today’s date, yesterday’s date at graph endpoints; **₹&lt;drop&gt;/gram** (from `/latest`).
 
 Image is generated on each request; refresh `/banner` for a new price/drop.
