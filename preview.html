@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gold PN — Android preview</title>
+  <style>
+    /* BharatPe brand colours only: Primary #00B386, Heading #1A1A1A, Body #6B7280, Black #000000, White #FFFFFF */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      color: #1A1A1A;
+    }
+    .phone-frame {
+      width: 420px;
+      height: 860px;
+      background: #000000;
+      border-radius: 44px;
+      padding: 14px;
+      box-shadow: 0 30px 100px rgba(0,0,0,0.2), inset 0 0 0 2px #6B7280;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: #FFFFFF;
+      border-radius: 28px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .status-bar {
+      height: 28px;
+      background: #000000;
+      color: #FFFFFF;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      flex-shrink: 0;
+    }
+    .status-bar .time { font-weight: 500; }
+    .status-bar .icons { display: flex; gap: 4px; align-items: center; }
+    .status-bar .icons span { opacity: 0.9; }
+    .notification-tray {
+      flex: 1;
+      padding: 12px 12px 24px;
+      overflow-y: auto;
+    }
+    .notification-card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #6B7280;
+    }
+    .notification-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px 10px;
+    }
+    .notification-app-icon {
+      width: 28px;
+      height: 28px;
+      background: #00B386;
+      border-radius: 7px;
+      flex-shrink: 0;
+    }
+    .notification-title-block {
+      flex: 1;
+      min-width: 0;
+    }
+    .notification-app-name {
+      font-size: 12px;
+      color: #6B7280;
+      margin: 0 0 2px;
+      line-height: 1.2;
+    }
+    .notification-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1A1A1A;
+      margin: 0;
+      line-height: 1.25;
+    }
+    .notification-subtitle {
+      font-size: 14px;
+      color: #6B7280;
+      margin: 3px 0 0;
+      line-height: 1.3;
+    }
+    .notification-time {
+      font-size: 11px;
+      color: #6B7280;
+      flex-shrink: 0;
+    }
+    .notification-big-picture {
+      width: 100%;
+      display: block;
+      background: #FFFFFF;
+      max-height: 380px;
+      object-fit: cover;
+      object-position: top;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone-frame">
+    <div class="phone-screen">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <div class="icons">
+          <span>📶</span>
+          <span>🔋</span>
+        </div>
+      </div>
+      <div class="notification-tray">
+        <div class="notification-card">
+          <div class="notification-header">
+            <div class="notification-app-icon"></div>
+            <div class="notification-title-block">
+              <p class="notification-app-name">BharatPe</p>
+              <p class="notification-title">Gold Price Drop</p>
+              <p class="notification-subtitle">Time to maximise your saving today</p>
+            </div>
+            <span class="notification-time">now</span>
+          </div>
+          <img class="notification-big-picture" src="/banner/image" alt="Gold banner" />
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

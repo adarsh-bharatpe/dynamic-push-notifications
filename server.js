@@ -1,11 +1,16 @@
 /**
  * Mock Gold Price API + Dynamic banner generator (local).
- * - GET /latest → gold price JSON
- * - GET /banner → dynamic Gold Price Drop banner image (PNG or SVG)
+ * - GET /latest       → gold price JSON
+ * - GET /banner       → mock Android notification preview (title, subtitle, image)
+ * - GET /banner/image → raw banner image (PNG or SVG)
  */
 
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 const { generateBanner } = require('./banner.js');
+
+const PREVIEW_HTML = fs.readFileSync(path.join(__dirname, 'preview.html'), 'utf8');
 
 const MIN_PRICE_PER_GRAM = 15000;
 const MAX_PRICE_PER_GRAM = 18000;
@@ -44,7 +49,14 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (req.method === 'GET' && (req.url === '/banner' || req.url === '/banner.png' || req.url === '/gold-banner')) {
+  if (req.method === 'GET' && req.url === '/banner') {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.writeHead(200);
+    res.end(PREVIEW_HTML);
+    return;
+  }
+
+  if (req.method === 'GET' && (req.url === '/banner/image' || req.url === '/banner.png' || req.url === '/gold-banner')) {
     try {
       const priceData = getGoldPrice();
       const { buffer, mime } = await generateBanner(priceData);
@@ -70,5 +82,6 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
   console.log('  GET /latest         → gold price (₹/gram)');
-  console.log('  GET /banner         → dynamic Gold Price Drop banner image');
+  console.log('  GET /banner         → mock Android PN preview (title + subtitle + image)');
+  console.log('  GET /banner/image   → raw banner image');
 });
