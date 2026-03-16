@@ -1,0 +1,18 @@
+{
+  "name": "dynamic-push-notifications",
+  "version": "1.0.0",
+  "description": "Mock gold price API + dynamic banner push notifications",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["gold-price", "mock-api", "push-notifications"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "optionalDependencies": {
+    "canvas": "^2.11.2"
+  }
+}
