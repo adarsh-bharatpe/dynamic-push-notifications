@@ -41,15 +41,25 @@ Send PN via Firebase with image URL
 
 ## Push notification content (copy)
 
-Use this exact structure for the Gold Price Drop PN.
+Two templates are used depending on whether gold price went **down** or **up** (today vs yesterday).
+
+**When price is down (today &lt; yesterday):**
 
 | Field | Content |
 |--------|--------|
 | **Title** | Gold Price Drop |
-| **Subtitle** | Time to maximise your saving today |
-| **PN image** | Dynamic banner (generated with today’s price / drop). |
+| **Subtitle** | Gold prices are down. Invest now. |
+| **PN image** | Dynamic banner with **downward** curve; yesterday (left), today (right). |
 
-**Body copy**
+**When price is up (today &gt; yesterday):**
+
+| Field | Content |
+|--------|--------|
+| **Title** | Gold Price Rise |
+| **Subtitle** | Gold prices are increasing. Invest now to earn return. |
+| **PN image** | Dynamic banner with **upward** curve; yesterday (left), today (right). |
+
+**Body copy (price down)**
 
 - **Static:**  
   `Gold Discount day, invest in gold today before this is gone.`
@@ -58,10 +68,13 @@ Use this exact structure for the Gold Price Drop PN.
   - Yesterday’s date (e.g. *15 Mar 2026*).
   - Price difference as **big/emphasised**: e.g. **₹410/gram** (use actual `drop` from gold price API).
 
-**Example final body:**
+**Example final body (price down):**
 
-> Gold Discount day, invest in gold today before this is gone.  
-> **16 Mar 2026** vs **15 Mar 2026** — **₹410/gram** down.
+> Gold prices are down. Invest now. **16 Mar 2026** vs **15 Mar 2026** — **₹410/gram** down.
+
+**Example final body (price up):**
+
+> Gold prices are increasing. Invest now to earn return. **16 Mar 2026** vs **15 Mar 2026** — **₹200/gram** up.
 
 **Placeholders for implementation**
 

@@ -8,7 +8,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { generateBanner } = require('./banner.js');
+const { generateBanner, getBannerData } = require('./banner.js');
 
 const PREVIEW_HTML = fs.readFileSync(path.join(__dirname, 'preview.html'), 'utf8');
 
@@ -20,6 +20,9 @@ function randomInt(min, max) {
 }
 
 let lastPrice = randomInt(MIN_PRICE_PER_GRAM, MAX_PRICE_PER_GRAM);
+let lastBannerPriceData = null;
+let lastBannerPriceTime = 0;
+const BANNER_PRICE_TTL_MS = 5000;
 
 function getGoldPrice() {
   const price_per_gram = randomInt(MIN_PRICE_PER_GRAM, MAX_PRICE_PER_GRAM);
@@ -50,15 +53,23 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && req.url === '/banner') {
+    const priceData = getGoldPrice();
+    lastBannerPriceData = priceData;
+    lastBannerPriceTime = Date.now();
+    const data = getBannerData(priceData);
+    const html = PREVIEW_HTML
+      .replace('{{TITLE}}', data.title)
+      .replace('{{SUBTITLE}}', data.subtitle);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.writeHead(200);
-    res.end(PREVIEW_HTML);
+    res.end(html);
     return;
   }
 
   if (req.method === 'GET' && (req.url === '/banner/image' || req.url === '/banner.png' || req.url === '/gold-banner')) {
     try {
-      const priceData = getGoldPrice();
+      const useCached = lastBannerPriceData && (Date.now() - lastBannerPriceTime < BANNER_PRICE_TTL_MS);
+      const priceData = useCached ? lastBannerPriceData : getGoldPrice();
       const { buffer, mime } = await generateBanner(priceData);
       res.setHeader('Content-Type', mime);
       res.setHeader('Cache-Control', 'no-store');
