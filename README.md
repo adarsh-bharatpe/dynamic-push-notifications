@@ -1,4 +1,4 @@
-# Dynamic Push Notifications
+# Dynamic Push Notifications (POC Only)
 
 Mock gold price API + **dynamic banner image** (run locally; PN delivery not included). All project documentation is in this README.
 
