@@ -67,6 +67,25 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Serve PN app icon from same origin so it loads reliably (Play CDN often blocks browser referrer)
+  const INVEST_BHARATPE_ICON_URL = 'https://play-lh.googleusercontent.com/OVCnOl9m05h30dVnA0nHG_MAnj_zkBlSN8Ni4Dkw0D1mJDTIWKVVEetaWDht5wZ9ERo=w240-h480-rw';
+  if (req.method === 'GET' && (pathname === '/icon' || pathname === '/app-icon')) {
+    try {
+      const r = await fetch(INVEST_BHARATPE_ICON_URL, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+      if (!r.ok) throw new Error(r.status);
+      const buf = Buffer.from(await r.arrayBuffer());
+      res.setHeader('Content-Type', r.headers.get('content-type') || 'image/png');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.writeHead(200);
+      res.end(buf);
+    } catch (err) {
+      console.error('Icon fetch failed:', err.message);
+      res.writeHead(404);
+      res.end();
+    }
+    return;
+  }
+
   if (req.method === 'GET' && (pathname === '/banner/image' || pathname === '/banner.png' || pathname === '/gold-banner')) {
     try {
       const useCached = lastBannerPriceData && (Date.now() - lastBannerPriceTime < BANNER_PRICE_TTL_MS);
@@ -96,4 +115,5 @@ server.listen(PORT, () => {
   console.log('  GET /latest         → gold price (₹/gram)');
   console.log('  GET /banner         → mock Android PN preview (title + subtitle + image)');
   console.log('  GET /banner/image   → raw banner image');
+  console.log('  GET /icon          → PN app icon (Invest BharatPe)');
 });
